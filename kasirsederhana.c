@@ -95,13 +95,41 @@ void list_kranjang(int ukuranArray_kranjang, int ukuranArray_list) //ukuran arra
         i++;
     }
 }
+
+void hapusIsi_kranjang(int idBarang_Hapus, int ukuranArray_kranjang)
+{
+   int i = 0;
+    while (i < ukuranArray_kranjang)
+    {
+        int j = 0;
+        int k = 0;
+        while(j < ukuranArray_list)
+        {
+            if (keranjang[i] == idBarang[j])
+            {
+               
+                k = 1;
+                break;
+            }
+            j++;
+        } 
+        if (!k) {
+            printf("%d | ID Tidak Ditemukan | %d | - | -\n", 
+                   keranjang[i], 
+                   jumlahItem_keranjang[i]);
+            }
+        
+        i++;
+    }
+    
+}
 int main()
 {
     int pilihanMenu;
  
     while(pilihanMenu != 0){
         printf("=== PROGRAM KASIR SEDERHANA ===\n          Select Menu          \n");
-        printf("1. Preview List Barang\n2. Tambah ke Keranjang\n3. Hapus Keranjang\n4. Edit Keranjang\n5. Lihat Keranjang\n6. Checkout\n7. Print Struk\n0. Exit Program\nMenu Ke-");
+        printf("1. Preview List Barang\n2. Tambah ke Keranjang\n3. Hapus barang di Keranjang\n4. Edit Keranjang\n5. Lihat Keranjang\n6. Checkout\n7. Print Struk\n0. Exit Program\nMenu Ke-");
         scanf("%d", &pilihanMenu);
 
         switch(pilihanMenu){
@@ -143,6 +171,7 @@ int main()
             break;
 
             case 3:
+            
             case 4:
             case 5:
             int arrayLen_kranjang = sizeof(keranjang)/sizeof(keranjang[0]);

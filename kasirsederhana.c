@@ -71,7 +71,7 @@ void tambah_keranjang(int idBarang_input, int jumlahBarang_input)
 void list_kranjang(int ukuranArray_kranjang, int ukuranArray_list) //ukuran array & nampilin keranjang
 {
     int i = 0;
-    printf("ID | NAMA BARANG | JUMLAH | HARGA\n");
+    printf("ID | NAMA BARANG | JUMLAH | HARGA | SUBTOTAL\n");
     while (i < ukuranArray_kranjang)
     {
         int j = 0;
@@ -80,7 +80,7 @@ void list_kranjang(int ukuranArray_kranjang, int ukuranArray_list) //ukuran arra
         {
             if (keranjang[i] == idBarang[j])
             {
-                printf("%d | %s | %d | %d\n",idBarang[j], barang[j], jumlahItem_keranjang[i], hargaBarang[j]);
+                printf("%d | %s | %d | %d | %d\n",idBarang[j], barang[j], jumlahItem_keranjang[i], hargaBarang[j], jumlahItem_keranjang[i]*hargaBarang[j] );
                 k = 1;
                 break;
             }
@@ -166,6 +166,10 @@ void edit_kranjang(int ukuranArray_kranjang, int ukuranArray_list)
     }
 }
 
+void checkout(int ukuranArray_kranjang, int ukuranArray_list)
+{
+    list_kranjang(ukuranArray_kranjang, ukuranArray_list);
+}
 int main()
 {
     int pilihanMenu;

@@ -1,27 +1,30 @@
 #include <stdio.h>
 #include <ctype.h>
 
-int idBarang[]=
+char idBarang[][6]=
 {
-    101,
-    102,
-    103,
+  "BRG001","BRG002","BRG003","BRG004","BRG005","BRG006","BRG007","BRG008","BRG009","BRG010",
 };
 
 char barang[][50] = 
 {
-    "Barang 1",
-    "Barang 2",
-    "Barang 3",
+    "Keyboard Mechanical RGB", "Mouse Wireless", "Mousepad XL", "Headset Gaming", "Webcam Full HD 1080p", "Monitor 24 Inch IPS", "Flashdisk 64GB", "SSD 512GB", "USB Hub 4 Port", "Speaker Bluetooth",
 };
 
 int hargaBarang[] =
 {
-    10000,
-    20000,
-    30000,
+    450000, 150000, 85000, 375000, 320000, 1850000, 95000, 650000, 75000, 280000,
 };
 
+int stokBarang[] = 
+{
+    15,25,30,12,10,8,40,18,20,14
+}
+
+int kategoriBarang[][10]=
+{
+    "Keyboard", "Mouse", "Aksesoris", "Audio", "Kamera", "Monitor", "Penyimpanan", "Penyimpanan", "Aksesoris", "Audio",
+}
 int keranjang[10] =
 {
     0
@@ -35,10 +38,10 @@ int jumlahItem_keranjang[10] =
 void list_barang(int ukuranArray_list) // ukuran array & nampilin listnya
 {
     int i;
-    printf("ID | NAMA BARANG | HARGA\n");
+    printf("ID    |        NAMA BARANG        | KATEGORI | HARGA (RP) | STOK\n");
     while (i < ukuranArray_list)
     {
-        printf("%d | %s | %d\n",idBarang[i], barang[i], hargaBarang[i]);
+        printf("%s | %s | %s | %d | %d\n",idBarang[i], barang[i], kategoriBarang[i], hargaBarang[i], stokBarang[i]);
         i++;
     }
 }

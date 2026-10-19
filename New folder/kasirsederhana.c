@@ -1,0 +1,530 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
+
+
+char idBarang[10][7] =
+{
+  "BRG001", 
+  "BRG002", 
+  "BRG003", 
+  "BRG004", 
+  "BRG005", 
+  "BRG006", 
+  "BRG007", 
+  "BRG008", 
+  "BRG009", 
+  "BRG010",
+};
+
+char barang[10][50] = 
+{
+    "Keyboard Mechanical RGB", 
+    "Mouse Wireless", 
+    "Mousepad XL", 
+    "Headset Gaming", 
+    "Webcam Full HD 1080p", 
+    "Monitor 24 Inch IPS", 
+    "Flashdisk 64GB", 
+    "SSD 512GB", 
+    "USB Hub 4 Port", 
+    "Speaker Bluetooth",
+};
+
+int hargaBarang[] =
+{
+    450000, 150000, 85000, 375000, 320000, 1850000, 95000, 650000, 75000, 280000
+};
+
+int stokBarang[] = 
+{
+    15,25,30,12,10,8,40,18,20,14
+};
+
+char kategoriBarang[10][12] =
+{
+    "Keyboard", 
+    "Mouse", 
+    "Aksesoris", 
+    "Audio", 
+    "Kamera", 
+    "Monitor", 
+    "Penyimpanan", 
+    "Penyimpanan", 
+    "Aksesoris", 
+    "Audio",
+};
+
+char keranjang[10][7] =
+{
+    {0}
+};
+
+int jumlahItem_keranjang[10] = 
+{
+    0
+};
+
+int jumlahKeranjang = 0;
+
+char barangStruk[10][7] = {{0}};
+int jumlahItem_struk[10] = {0};
+int jumlahStruk = 0;
+
+int cari_barang(char *idBarang_input, int ukuranArray_list)
+{
+    int i = 0;
+    while (i < ukuranArray_list)
+    {
+        if (strcmp(idBarang[i], idBarang_input) == 0)
+        {
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
+
+void list_barang(int ukuranArray_list) //FUNGSI MENAMPILKAN LIST BARANG
+{
+    int i = 0;
+    printf("ID     |        NAMA BARANG        |   KATEGORI   | HARGA (RP) | STOK\n");
+    while (i < ukuranArray_list)
+    {
+        printf("%s | %-25s | %-12s | %-10d | %d\n", idBarang[i], barang[i], kategoriBarang[i], hargaBarang[i], stokBarang[i]);
+        i++;
+    };
+}
+
+void tambah_keranjang(char *idBarang_input, int jumlahBarang_input) //FUNGSI MENAMBAH KE KERANJANG
+{
+    int i = 0;
+    int indexBarang = cari_barang(idBarang_input, sizeof(idBarang) / sizeof(idBarang[0]));
+
+    if (indexBarang == -1)
+    {
+        printf("ID Barang %s tidak ditemukan!\n", idBarang_input);
+        return;
+    }
+
+    if (stokBarang[indexBarang] == 0)
+    {
+        printf("Tidak bisa menambahkan barang karena stok habis!\n");
+        return;
+    }
+
+    if (jumlahBarang_input <= 0)
+    {
+        printf("Jumlah barang harus lebih dari 0!\n");
+        return;
+    }
+
+    while (i < jumlahKeranjang)
+    {
+        if (strcmp(keranjang[i], idBarang_input) == 0)
+        {
+            if (jumlahBarang_input > stokBarang[indexBarang] - jumlahItem_keranjang[i])
+            {
+                printf("Stok tidak mencukupi! Stok tersedia: %d\n",
+                       stokBarang[indexBarang] - jumlahItem_keranjang[i]);
+                return;
+            }
+            jumlahItem_keranjang[i] += jumlahBarang_input;
+            return;
+        }
+        i++;
+    }
+
+    if (jumlahBarang_input > stokBarang[indexBarang])
+    {
+        printf("Stok tidak mencukupi! Stok tersedia: %d\n", stokBarang[indexBarang]);
+        return;
+    }
+
+    if (jumlahKeranjang >= 10)
+    {
+        printf("Keranjang sudah penuh!\n");
+        return;
+    }
+
+    strcpy(keranjang[jumlahKeranjang], idBarang_input);
+    jumlahItem_keranjang[jumlahKeranjang] = jumlahBarang_input;
+    jumlahKeranjang++;
+}
+
+void list_kranjang(int ukuranArray_kranjang, int ukuranArray_list) //FUNGSI NAMPILKAN KERANJANG
+{
+    int i = 0;
+    printf("ID     |        NAMA BARANG        | JUMLAH |   KATEGORI   | HARGA (RP) | SUBTOTAL\n");
+    while (i < ukuranArray_kranjang)
+    {
+        int j = 0;
+        int k = 0;
+        while(j < ukuranArray_list)
+        {
+            if (strcmp(keranjang[i], idBarang[j]) == 0)
+            {
+                printf("%s | %-25s |   %-3d   | %-12s | %-10d | %d\n", idBarang[j], barang[j], jumlahItem_keranjang[i], kategoriBarang[i], hargaBarang[j], jumlahItem_keranjang[i] * hargaBarang[j]);
+                k = 1;
+                break;
+            }
+            j++;
+        }
+        if (!k) {
+            printf("%s | ID Tidak Ditemukan | %d | - | -\n",
+                   keranjang[i],
+                   jumlahItem_keranjang[i]);
+        }
+
+        i++;
+    }
+}
+
+void hapusIsi_kranjang(int ukuranArray_kranjang, int ukuranArray_list) //FUNGSI HAPUS ISI KERANJANG
+{
+    char idBarang_Hapus[7];
+    int i = 0;
+    printf("\n");
+    list_kranjang(ukuranArray_kranjang, ukuranArray_list);
+    printf("Masukkan ID Barang yang mau dihapus: ");
+    scanf("%6s", idBarang_Hapus);
+
+    while (i < jumlahKeranjang)
+    {
+        if (strcmp(keranjang[i], idBarang_Hapus) == 0)
+        {
+            int j = i;
+            while (j < jumlahKeranjang - 1)
+            {
+                strcpy(keranjang[j], keranjang[j + 1]);
+                jumlahItem_keranjang[j] = jumlahItem_keranjang[j + 1];
+                j++;
+            }
+            jumlahKeranjang--;
+            keranjang[jumlahKeranjang][0] = '\0';
+            jumlahItem_keranjang[jumlahKeranjang] = 0;
+
+            list_kranjang(jumlahKeranjang, ukuranArray_list);
+            return;
+        }
+        i++;
+    }
+
+    printf("ID barang tidak ditemukan di keranjang.\n");
+}
+
+void edit_kranjang(int ukuranArray_list)
+{
+    char statement;
+    char idBarang_input[7];
+    do {
+        int i = 0;
+        int jumlahBaru;
+
+        list_kranjang(jumlahKeranjang, ukuranArray_list);
+        printf("\n");
+        printf("Masukkan ID Barang yang mau Diubah: ");
+        scanf("%6s", idBarang_input);
+
+        while (i < jumlahKeranjang &&
+               strcmp(keranjang[i], idBarang_input) != 0) {
+            i++;
+        }
+
+        if (i == jumlahKeranjang) {
+            printf("ID Barang %s tidak ditemukan dalam keranjang!\n",
+                   idBarang_input);
+            return;
+        }
+
+        printf("Masukkan Jumlah yang baru: ");
+        scanf("%d", &jumlahBaru);
+        if (jumlahBaru < 0) {
+            printf("Jumlah barang tidak boleh kurang dari 0!\n");
+        } else if (jumlahBaru > 0) {
+            int indexBarang = cari_barang(idBarang_input,
+                                          sizeof(idBarang) / sizeof(idBarang[0]));
+            if (indexBarang == -1) {
+                printf("ID Barang %s tidak ditemukan!\n", idBarang_input);
+                return;
+            }
+            if (jumlahBaru > stokBarang[indexBarang]) {
+                printf("Stok tidak mencukupi! Stok tersedia: %d\n",
+                       stokBarang[indexBarang]);
+            } else {
+                jumlahItem_keranjang[i] = jumlahBaru;
+            }
+        } else {
+            int j = i;
+            while (j < jumlahKeranjang - 1) {
+                strcpy(keranjang[j], keranjang[j + 1]);
+                jumlahItem_keranjang[j] = jumlahItem_keranjang[j + 1];
+                j++;
+            }
+            jumlahKeranjang--;
+            keranjang[jumlahKeranjang][0] = '\0';
+            jumlahItem_keranjang[jumlahKeranjang] = 0;
+        }
+
+        printf("Mau mengubah barang lainnya?: ");
+        scanf(" %c", &statement);
+        statement = tolower((unsigned char)statement);
+    } while (statement != 'n');
+}
+
+void checkout(int ukuranArray_kranjang, int ukuranArray_list)
+{
+    int totalHarga = 0;
+    int uangDibayar = 0;
+    int nominal;
+    int i = 0;
+
+    if (ukuranArray_kranjang == 0)
+    {
+        printf("Keranjang masih kosong!\n");
+        return;
+    }
+
+    while (i < ukuranArray_kranjang)
+    {
+        int indexBarang = cari_barang(keranjang[i], ukuranArray_list);
+        if (indexBarang == -1)
+        {
+            printf("Checkout gagal: ID barang %s tidak ditemukan!\n", keranjang[i]);
+            return;
+        }
+        if (jumlahItem_keranjang[i] <= 0 ||
+            jumlahItem_keranjang[i] > stokBarang[indexBarang])
+        {
+            printf("Checkout gagal: stok %s tidak mencukupi!\n", barang[indexBarang]);
+            return;
+        }
+        i++;
+    }
+
+    i = 0;
+    list_kranjang(ukuranArray_kranjang, ukuranArray_list);
+    printf("\n");
+    while (i < ukuranArray_kranjang)
+    {
+        int j = 0;
+        while (j < ukuranArray_list)
+        {
+            if (strcmp(keranjang[i], idBarang[j]) == 0)
+            {
+                totalHarga += jumlahItem_keranjang[i] * hargaBarang[j];
+            } 
+            j++;
+        }
+    
+        i++;
+    }
+    printf("Total Belanja anda adalah Rp.%d\nSilahkan masukkan nominal yang sesuai dengan layar: Rp.", totalHarga);
+    while (1)
+    {
+        scanf("%d", &nominal);
+        uangDibayar += nominal;
+        int selisihUang = totalHarga - uangDibayar;
+          if (selisihUang > 0)
+            {
+                printf("Uang masih kurang %d, silahkan masukkan nominal yang kurang: Rp.", selisihUang);
+                
+            } else if (selisihUang <= 0)
+            {
+                printf("Kembali Rp.%d\n", abs(selisihUang));
+                break;
+            } 
+
+    }
+    printf("Pembayaran Diterima\n");
+
+    jumlahStruk = ukuranArray_kranjang;
+    i = 0;
+    while (i < ukuranArray_kranjang)
+    {
+        int indexBarang = cari_barang(keranjang[i], ukuranArray_list);
+        stokBarang[indexBarang] -= jumlahItem_keranjang[i];
+        strcpy(barangStruk[i], keranjang[i]);
+        jumlahItem_struk[i] = jumlahItem_keranjang[i];
+        i++;
+    }
+
+    jumlahKeranjang = 0;
+    i = 0;
+    while (i < 10)
+    {
+        keranjang[i][0] = '\0';
+        jumlahItem_keranjang[i] = 0;
+        i++;
+    }
+}
+
+void print_struk(int ukuranArray_kranjang, int ukuranArray_list)
+{
+    int totalHarga = 0;
+    int i = 0;
+    int jumlahBarang_struk = jumlahStruk > 0 ? jumlahStruk : ukuranArray_kranjang;
+
+    printf("================================= STRUK PEMBELIAN ================================\n");
+    if (jumlahStruk == 0)
+    {
+        list_kranjang(ukuranArray_kranjang, ukuranArray_list);
+    }
+    else
+    {
+        printf("ID     |        NAMA BARANG        | JUMLAH |   KATEGORI   | HARGA (RP) | SUBTOTAL\n");
+    }
+
+    while (i < jumlahBarang_struk)
+    {
+        char *idStruk = jumlahStruk > 0 ? barangStruk[i] : keranjang[i];
+        int jumlah = jumlahStruk > 0 ? jumlahItem_struk[i] : jumlahItem_keranjang[i];
+        int indexBarang = cari_barang(idStruk, ukuranArray_list);
+
+        if (jumlahStruk > 0 && indexBarang != -1)
+        {
+            printf("%s | %-25s |   %-3d   | %-12s | %-10d | %d\n",
+                   idBarang[indexBarang], barang[indexBarang], jumlah,
+                   kategoriBarang[indexBarang], hargaBarang[indexBarang],
+                   jumlah * hargaBarang[indexBarang]);
+        }
+        if (indexBarang != -1)
+        {
+            totalHarga += jumlah * hargaBarang[indexBarang];
+        }
+        i++;
+    }
+    printf("Total Belanja: Rp.%d\n", totalHarga);
+    printf("Terimakasih telah berbelanja bersama kami!\n");
+}
+
+int main()
+{
+    int pilihanMenu = -1;
+
+    while (pilihanMenu != 0) {
+        printf("=== PROGRAM KASIR SEDERHANA ===\n          Select Menu          \n");
+        printf("1. Preview List Barang\n2. Tambah ke Keranjang\n3. Hapus barang di Keranjang\n4. Edit Keranjang\n5. Lihat Keranjang\n6. Checkout\n7. Print Struk\n0. Exit Program\nMenu Ke-");
+        scanf("%d", &pilihanMenu);
+
+        switch (pilihanMenu) {
+            case 0:
+                printf("Terimakasih telah Berbelanja bersama kami!");
+                break;
+
+            case 1: {
+                char pilihanList;
+                int arrayLen_barang = sizeof(idBarang) / sizeof(idBarang[0]);
+                list_barang(arrayLen_barang);
+                printf("\nKembali ke menu? (Y): "); scanf(" %c", &pilihanList);
+                pilihanList = tolower(pilihanList);
+                if (pilihanList == 'n') {
+                    printf("Error!\n");
+                    continue;
+                } else {
+                    printf("\n");
+                    continue;
+                }
+            }
+
+            case 2: {
+                int y;
+                char pilihanTambah;
+                char idInput[7];
+                while (1) {
+                    printf("Masukkan ID Barang:"); scanf(" %6s", idInput);
+                    printf("Masukkan Jumlah Barang:"); scanf(" %d", &y);
+                    tambah_keranjang(idInput, y);
+                    printf("Tambah Lagi?(Y/N):"); scanf(" %c", &pilihanTambah);
+                    pilihanTambah = tolower(pilihanTambah);
+                    if (pilihanTambah == 'n') {
+                        printf("\n");
+                        break;
+                    }
+                    printf("\n");
+                }
+                break;
+            }
+
+            case 3: {
+                char pilihanList_kranjang;
+                hapusIsi_kranjang(jumlahKeranjang, sizeof(idBarang) / sizeof(idBarang[0]));
+                printf("Barang Berhasil dihapus");
+                printf("\nKembali ke menu? (Y): "); scanf(" %c", &pilihanList_kranjang);
+                pilihanList_kranjang = tolower(pilihanList_kranjang);
+                if (pilihanList_kranjang == 'n') {
+                    printf("Error!\n");
+                    continue;
+                } else {
+                    printf("\n");
+                    continue;
+                }
+            }
+
+            case 4: {
+                char pilihanList_kranjang;
+                edit_kranjang(sizeof(idBarang) / sizeof(idBarang[0]));
+                printf("\nKembali ke menu? (Y): "); scanf(" %c", &pilihanList_kranjang);
+                pilihanList_kranjang = tolower(pilihanList_kranjang);
+                if (pilihanList_kranjang == 'n') {
+                    printf("Error!\n");
+                    continue;
+                } else {
+                    printf("\n");
+                    continue;
+                }
+            }
+
+            case 5: {
+                int arrayLen_barang = sizeof(idBarang) / sizeof(idBarang[0]);
+                char pilihanList_kranjang;
+                list_kranjang(jumlahKeranjang, arrayLen_barang);
+                printf("\nKembali ke menu? (Y): "); scanf(" %c", &pilihanList_kranjang);
+                pilihanList_kranjang = tolower(pilihanList_kranjang);
+                if (pilihanList_kranjang == 'n') {
+                    printf("Error!\n");
+                    continue;
+                } else {
+                    printf("\n");
+                    continue;
+                }
+            }
+
+            case 6: {
+            char pilihanList_Checkout;
+            int arrayLen_barang = sizeof(idBarang) / sizeof(idBarang[0]);
+            checkout(jumlahKeranjang, arrayLen_barang);
+            printf("\nKembali ke menu? (Y): "); scanf(" %c", &pilihanList_Checkout);
+                pilihanList_Checkout = tolower(pilihanList_Checkout);
+                if (pilihanList_Checkout == 'n') {
+                    printf("Error!\n");
+                    continue;
+                } else {
+                    printf("\n");
+                    continue;
+                }
+            }
+            case 7:
+            {
+                char pilihanList_Struk;
+                int arrayLen_barang = sizeof(idBarang) / sizeof(idBarang[0]);
+                print_struk(jumlahKeranjang, arrayLen_barang);
+                printf("\nKembali ke menu? (Y): "); scanf(" %c", &pilihanList_Struk);
+                pilihanList_Struk = tolower(pilihanList_Struk);
+                if (pilihanList_Struk == 'n') {
+                    printf("Error!\n");
+                    continue;
+                } else {
+                    printf("\n");
+                    continue;
+                }
+            }
+            default:
+                printf("Salah pilih menu!\n");
+                continue;
+        }
+    }
+
+    return 0;
+}
